@@ -42,7 +42,7 @@ const ISO8601Duration = (ISO: string) => {
   return duration;
 };
 
-export async function checkLatestVideos() {
+export async function checkLatestYtVideos() {
   const latestIds = getLatestVideoIds();
 
   const data = await rssParser.parseURL(

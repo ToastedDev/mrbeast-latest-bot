@@ -1,3 +1,4 @@
-import { checkLatestVideos } from "./youtube";
+import { checkLatestYtVideos } from "./youtube";
 
-checkLatestVideos();
+checkLatestYtVideos();
+setInterval(checkLatestYtVideos, 10 * 1000);
