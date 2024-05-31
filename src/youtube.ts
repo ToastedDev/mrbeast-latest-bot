@@ -1,5 +1,5 @@
 import Parser from "rss-parser";
-import { getLatestVideoIds, setLatestVideoId } from "./utils/db";
+import { getLatestIds, setLatestId } from "./utils/db";
 import { sendMessage } from "./utils/discord";
 
 const CHANNEL_ID = "UCX6OQ3DkcsbYNE6H8uQQuVA";
@@ -43,7 +43,7 @@ const ISO8601Duration = (ISO: string) => {
 };
 
 export async function checkLatestYtVideos() {
-  const latestIds = getLatestVideoIds();
+  const latestIds = getLatestIds();
 
   const data = await rssParser.parseURL(
     `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`,
@@ -88,6 +88,102 @@ export async function checkLatestYtVideos() {
         },
       ],
     });
-    setLatestVideoId("youtubeVideo", id);
+    setLatestId("youtubeVideo", id);
+  }
+}
+
+function parseRelativeTime(timeString: string) {
+  // Create a mapping of time units to their equivalent in milliseconds
+  const timeUnits = {
+    second: 1000,
+    seconds: 1000,
+    minute: 1000 * 60,
+    minutes: 1000 * 60,
+    hour: 1000 * 60 * 60,
+    hours: 1000 * 60 * 60,
+    day: 1000 * 60 * 60 * 24,
+    days: 1000 * 60 * 60 * 24,
+    week: 1000 * 60 * 60 * 24 * 7,
+    weeks: 1000 * 60 * 60 * 24 * 7,
+    month: 1000 * 60 * 60 * 24 * 30,
+    months: 1000 * 60 * 60 * 24 * 30,
+    year: 1000 * 60 * 60 * 24 * 365,
+    years: 1000 * 60 * 60 * 24 * 365,
+  };
+
+  // Regular expression to match the input string
+  const regex =
+    /(\d+)\s+(second|seconds|minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years)\s+ago/;
+  const match = timeString.match(regex);
+
+  if (!match) {
+    throw new Error("Invalid time string format");
+  }
+
+  // Extract the number and unit from the match
+  const number = parseInt(match[1], 10);
+  const unit = match[2].toLowerCase();
+
+  // Calculate the milliseconds to subtract based on the unit
+  const millisecondsToSubtract = number * (timeUnits as any)[unit];
+
+  // Create a new date object for the current date and time
+  const currentDate = new Date();
+
+  // Subtract the calculated milliseconds from the current date
+  const pastDate = new Date(currentDate.getTime() - millisecondsToSubtract);
+
+  // Return the calculated date
+  return pastDate;
+}
+
+export async function checkLatestYtCommunityPosts() {
+  const latestIds = getLatestIds();
+
+  const url = `https://www.youtube.com/channel/${CHANNEL_ID}/community`;
+  const res = await fetch(url);
+  const html = await res.text();
+  const initialData = JSON.parse(
+    "{" + html.split("var ytInitialData = {")[1].split("};")[0] + "}",
+  );
+  const latest = initialData.contents.twoColumnBrowseResultsRenderer.tabs.find(
+    (tab: any) => tab.tabRenderer.title === "Community",
+  ).tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer
+    .contents[0].backstagePostThreadRenderer.post.backstagePostRenderer;
+  const id = latest.postId;
+  if (latestIds.youtubePost !== id) {
+    const url = `https://youtube.com/post/${id}`;
+    const text = latest.contentText.runs[0].text;
+    let description = text;
+    if (description.length > 4095)
+      description = description.substring(0, 4095).concat("…");
+    const image =
+      "postMultiImageRenderer" in latest.backstageAttachment
+        ? latest.backstageAttachment.postMultiImageRenderer.images[0]
+            .backstageImageRenderer.image
+        : latest.backstageAttachment.backstageImageRenderer.image;
+    const imageUrl = image.thumbnails.sort(
+      (a: any, b: any) => b.width * b.height - a.width * a.height,
+    )[0].url;
+    const relativeTime = latest.publishedTimeText.runs[0].text;
+    await sendMessage({
+      content: "MrBeast made a new community post!",
+      embeds: [
+        {
+          description: text,
+          url,
+          author: {
+            name: "MrBeast",
+            url: `https://youtube.com/channel/${CHANNEL_ID}`,
+            iconUrl:
+              "https://yt3.googleusercontent.com/fxGKYucJAVme-Yz4fsdCroCFCrANWqw0ql4GYuvx8Uq4l_euNJHgE-w9MTkLQA805vWCi-kE0g=s176-c-k-c0x00ffffff-no-rj",
+          },
+          imageUrl,
+          color: "#ff0000",
+          timestamp: parseRelativeTime(relativeTime).toISOString(),
+        },
+      ],
+    });
+    setLatestId("youtubePost", id);
   }
 }
