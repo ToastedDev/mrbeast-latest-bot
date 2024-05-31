@@ -1,4 +1,4 @@
-import { getLatestIds } from "./utils/db";
+import { getLatestIds, setLatestId } from "./utils/db";
 import { sendMessage } from "./utils/discord";
 
 const USER_ID = "2455740283";
@@ -49,5 +49,6 @@ export async function checkLatestTweets() {
         },
       ],
     });
+    setLatestId("twitterTweet", latest_tweet);
   }
 }
