@@ -8,6 +8,12 @@ interface Database {
   twitter: {
     latestTweetId: string;
   };
+  tiktok: {
+    latestVideoId: string;
+  };
+  instagram: {
+    latestPostId: string;
+  };
 }
 
 async function initDatabase() {
@@ -17,6 +23,8 @@ async function initDatabase() {
       JSON.stringify({
         youtube: { latestVideoId: "", latestPostId: "" },
         twitter: { latestTweetId: "" },
+        tiktok: { latestVideoId: "" },
+        instagram: { latestPostId: "" },
       } satisfies Database),
     );
   }
@@ -32,11 +40,18 @@ export function getLatestIds() {
     youtubeVideo: db.youtube.latestVideoId,
     youtubePost: db.youtube.latestPostId,
     twitterTweet: db.twitter.latestTweetId,
+    tiktokVideo: db.tiktok.latestVideoId,
+    instagramPost: db.instagram.latestPostId,
   };
 }
 
 export function setLatestId(
-  type: "youtubeVideo" | "youtubePost" | "twitterTweet",
+  type:
+    | "youtubeVideo"
+    | "youtubePost"
+    | "twitterTweet"
+    | "tiktokVideo"
+    | "instagramPost",
   id: string,
 ) {
   switch (type) {
@@ -48,6 +63,12 @@ export function setLatestId(
       break;
     case "twitterTweet":
       db.twitter.latestTweetId = id;
+      break;
+    case "tiktokVideo":
+      db.tiktok.latestVideoId = id;
+      break;
+    case "instagramPost":
+      db.instagram.latestPostId = id;
       break;
     default:
       break;

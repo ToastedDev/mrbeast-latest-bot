@@ -1,3 +1,4 @@
+import { checkLatestTiktokAndInstagram } from "./tt-ig";
 import { checkLatestTweets } from "./twitter";
 import { checkLatestYtCommunityPosts, checkLatestYtVideos } from "./youtube";
 
@@ -9,3 +10,6 @@ setInterval(checkLatestYtCommunityPosts, 5 * 60 * 1000);
 
 checkLatestTweets();
 setInterval(checkLatestTweets, 10 * 1000);
+
+checkLatestTiktokAndInstagram();
+setInterval(checkLatestTiktokAndInstagram, 60 * 1000);
