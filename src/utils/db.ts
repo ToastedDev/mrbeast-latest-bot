@@ -5,6 +5,9 @@ interface Database {
     latestVideoId: string;
     latestPostId: string;
   };
+  twitter: {
+    latestTweetId: string;
+  };
 }
 
 async function initDatabase() {
@@ -13,6 +16,7 @@ async function initDatabase() {
       "./db.json",
       JSON.stringify({
         youtube: { latestVideoId: "", latestPostId: "" },
+        twitter: { latestTweetId: "" },
       } satisfies Database),
     );
   }
@@ -27,16 +31,23 @@ export function getLatestIds() {
   return {
     youtubeVideo: db.youtube.latestVideoId,
     youtubePost: db.youtube.latestPostId,
+    twitterTweet: db.twitter.latestTweetId,
   };
 }
 
-export function setLatestId(type: "youtubeVideo" | "youtubePost", id: string) {
+export function setLatestId(
+  type: "youtubeVideo" | "youtubePost" | "twitterTweet",
+  id: string,
+) {
   switch (type) {
     case "youtubeVideo":
       db.youtube.latestVideoId = id;
       break;
     case "youtubePost":
       db.youtube.latestPostId = id;
+      break;
+    case "twitterTweet":
+      db.twitter.latestTweetId = id;
       break;
     default:
       break;
