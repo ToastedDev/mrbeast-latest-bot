@@ -12,10 +12,18 @@ export async function checkLatestVideos() {
   );
   const latest = data.items[0];
   const id = latest.id.split(":")[2];
+  const title = latest.title;
+  const publishedAt = new Date(latest.pubDate!);
   if (latestIds.youtubeVideo !== id) {
-    console.log("New video found!");
-    console.log(latest);
-    latestIds.youtubeVideo = id;
-    setLatestVideoId("youtubeVideo", id);
+    await fetch(process.env.DISCORD_WEBHOOK_URL!, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        content: `New video published: ${title}`,
+      }),
+    });
+    // setLatestVideoId("youtubeVideo", id);
   }
 }
