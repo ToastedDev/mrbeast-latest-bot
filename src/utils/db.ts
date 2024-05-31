@@ -17,18 +17,18 @@ async function initDatabase() {
   }
 }
 
-initDatabase();
+await initDatabase();
 
 const dbFile = Bun.file("./db.json");
 const db: Database = await dbFile.json();
 
-export async function getLatestVideoIds() {
+export function getLatestVideoIds() {
   return {
     youtubeVideo: db.youtube.latestVideoId,
   };
 }
 
-export async function setLatestVideoId(type: "youtubeVideo", id: string) {
+export function setLatestVideoId(type: "youtubeVideo", id: string) {
   switch (type) {
     case "youtubeVideo":
       db.youtube.latestVideoId = id;
