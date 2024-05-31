@@ -1,1 +1,3 @@
-console.log("Hello from Bun!");
+import { checkLatestVideos } from "./youtube";
+
+checkLatestVideos();
