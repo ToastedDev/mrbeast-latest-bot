@@ -29,5 +29,25 @@ export async function checkLatestTiktokAndInstagram() {
     setLatestId("tiktokVideo", data.tiktok.id);
   }
 
-  // TODO: add instagram
+  if (latestIds.instagramPost !== data.instagram.id) {
+    await sendMessage({
+      content: `MrBeast posted a new ${data.instagram.isReel ? "reel" : "post"} on Instagram!`,
+      embeds: [
+        {
+          title: data.instagram.title,
+          url: `https://www.instagram.com/${data.instagram.isReel ? "reel" : "p"}/${data.instagram.id}`,
+          author: {
+            name: "MrBeast",
+            url: "https://www.instagram.com/mrbeast",
+            iconUrl:
+              "https://instagram.fmnl25-5.fna.fbcdn.net/v/t51.2885-19/31077884_211593632905749_1394765701385814016_n.jpg?stp=dst-jpg_s320x320&_nc_ht=instagram.fmnl25-5.fna.fbcdn.net&_nc_cat=1&_nc_ohc=55a0MDL6ibcQ7kNvgEeB1X-&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AYBj8XRH63P-vYVLOUXarL6IDrbRqXtZ2xi0OsDLyjPBfA&oe=6660BBCF&_nc_sid=8b3546",
+          },
+          imageUrl: data.instagram.thumbnail,
+          color: "#E1306C",
+          timestamp: data.instagram.publishedAt,
+        },
+      ],
+    });
+    setLatestId("instagramPost", data.instagram.id);
+  }
 }
