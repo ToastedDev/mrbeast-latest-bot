@@ -13,3 +13,11 @@ setInterval(checkLatestTweets, 10 * 1000);
 
 checkLatestTiktokAndInstagram();
 setInterval(checkLatestTiktokAndInstagram, 60 * 1000);
+
+process.on("unhandledRejection", (err) => {
+  console.error(err);
+});
+
+process.on("uncaughtException", (err) => {
+  console.error(err);
+});
