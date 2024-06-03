@@ -29,6 +29,7 @@ export async function checkLatestTweets() {
         (mention: string) =>
           `[${mention}](https://twitter.com/${mention.slice(1)})`,
       );
+    const imageUrl = data.d.data.tweetResult.result.legacy.entities.media[0].media_url_https;
     const createdAt = new Date(
       data.d.data.tweetResult.result.legacy.created_at,
     );
@@ -44,6 +45,7 @@ export async function checkLatestTweets() {
             iconUrl:
               "https://pbs.twimg.com/profile_images/994592419705274369/RLplF55e_400x400.jpg",
           },
+          imageUrl,
           color: "#1DA1F2",
           timestamp: createdAt.toISOString(),
         },
