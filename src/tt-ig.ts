@@ -7,7 +7,10 @@ export async function checkLatestTiktokAndInstagram() {
   const res = await fetch("https://api.toasted.dev/mrbeast-latest");
   const data = await res.json();
 
-  if (latestIds.tiktokVideo !== data.tiktok.id) {
+  if (
+    latestIds.tiktokVideo !== data.tiktok.id &&
+    Date.now() - new Date(data.tiktok.publishedAt).getTime() < 10 * 60 * 1000
+  ) {
     await sendMessage({
       content: "MrBeast posted a new video on TikTok!",
       embeds: [
